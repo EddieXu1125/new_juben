@@ -43,17 +43,15 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
-
     </el-form>
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { login } from '@/api/user.js'
+import CryptoJS from 'crypto-js'
+import { setToken } from '@/utils/auth'
 
 export default {
   name: 'Login',
@@ -74,8 +72,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'liukai',
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -108,9 +106,16 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
+          const param = {
+            'username': this.loginForm.username,
+            'password': CryptoJS.MD5(this.loginForm.password).toString()
+          }
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+          login(param).then((data) => {
+            this.$store.state.user.token = data.token
+            this.$store.state.user.name = this.loginForm.username
+            setToken(data.token)
+            this.$router.push({ path: '/' })
             this.loading = false
           }).catch(() => {
             this.loading = false
