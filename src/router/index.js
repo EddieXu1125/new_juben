@@ -61,13 +61,60 @@ export const constantRoutes = [
     path: '/menu',
     component: Layout,
     redirect: '/menu/index',
-    children: [{
-      path: 'index',
-      name: 'menu',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '层级目录', icon: 'dashboard' }
-    }]
+    children: [
+      {
+        path: 'index',
+        name: 'menu',
+        component: () => import('@/views/menu/index'),
+        meta: { title: '层级目录', icon: 'nested' },
+      },
+      {
+        path: "e/:encode_drama_id/allCards",
+        name: 'all_chang',
+        component:() => import('@/views/menu/all_chang'),
+        props:true,
+        hidden: true
+      },
+      {
+        path:"e/:encode_drama_id",
+        name: 'episode',
+        component:() => import('@/views/menu/episode'),
+        props:true,
+        hidden: true
+      },
+      // {
+      //   path:"e/:encode_drama_id/:encode_episode_id",
+      //   component:Jeditor_chang,
+      //   props:true
+      // },
+        //   {path:"e/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:Jeditor_editor,props:true},
+        //   {path:"faste/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:jeditor_fast_editor,props:true},
+    ]
   },
+
+//   {
+//     path:"/board",component: MainFrame,
+//     children:[
+//         {path:"e",component:Jeditor_Ju,alias: '/'},
+//         {path:"e/:encode_drama_id",component:Jeditor_Ji,props:true},
+//         {path:"e/:encode_drama_id/allCards",component:jeditor_all_chang,props:true},
+//         {path:"e/:encode_drama_id/:encode_episode_id",component:Jeditor_chang,props:true},
+//         {path:"e/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:Jeditor_editor,props:true},
+//         {path:"faste/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:jeditor_fast_editor,props:true},
+//         {path:"board/rm",component:Manager,
+//             children:[
+//                 {path:"",redirect: "Character"},
+//                 {path:"Relation",component:Relation_Manager},
+//                 {path:"Character",component: Character_Manager}
+//             ]
+//         },
+//         {path:"board/ed",component:ExternalDB},
+//         {path:"board/edf",component:ExternalDBFrame},
+
+//         {path:"building",component:Building},
+//     ]
+// }
+
   {
     path: 'external-link',
     component: Layout,
@@ -84,7 +131,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'hash', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
