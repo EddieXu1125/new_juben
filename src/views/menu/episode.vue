@@ -1,7 +1,11 @@
 <template>
     <div class="main_board">
         <div class="center_main">
-            <div class="backto iconfont" v-on:click="$router.push('/menu/e/'+encode(drama.id)+'/allCards');">&#xe6a8;</div>
+        
+            <el-row>
+                <el-button type="primary" size="middle" :icon="'el-icon-back'" @click="$router.push('/menu')">剧本管理</el-button>
+            </el-row>
+        
             <div class="searchbar">
                 <el-select
                     @keyup.enter.native="(searchcontent==''?null:$router.push('/board/e/'+encode(drama_id) + '/'+encode(searchcontent)))"
@@ -30,22 +34,22 @@
                     </div>
                 </div>
                 <div style="height:180px;width:2px;background:#ddd;margin:20px 10px;"></div>
-                <div class="jumu_item" v-for="episode in episode_data" :key="episode.id" @dblclick="$router.push('/board/e/'+encode(episode.drama_id) + '/'+encode(episode.id))">
-                    <div v-on:click="$router.push('/board/e/'+encode(episode.drama_id) + '/'+encode(episode.id))" class="title">{{episode.episode_name}}</div>
+                <div class="jumu_item" v-for="episode in episode_data" :key="episode.id" 
+                @dblclick="$router.push('/menu/e/'+encode(drama.id)+'/allCards')">
+                    <div v-on:click="$router.push('/menu/e/'+encode(drama_id)+'/allCards')" class="title">{{episode.episode_name}}</div>
                     <div class="c_time">{{episode.c_time}}</div>
                     <div class="hidden_menu">
-                        <div class="btn"><a class="hidden_a" :href="ROOT_HOST+'/tool/downloadword/'+(new Date()).getTime()+'/'+drama_id+'/'+episode.id">下载</a></div>
-                        <div class="btn"  v-on:click="show_edit(episode.id)">编辑</div>
-                        <div class="btn" v-on:click="show_delete(episode.id)">删除</div>
+                        <div class="btn" v-on:click="$router.push('/menu/e/'+encode(drama_id)+'/allCards')" style="width:100%;">阅读</div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- 新建剧集 -->
         <div class="msgBox" id="add_new_juji_board" v-show="add_new_show">
             <div class="btn close_btn"  v-on:click="add_new_show=false"></div>
             <div class="title">新建剧集</div>
             <div class="form" id="new_form">
-
                 <div class="item">
                     <div class="item_title">剧集名称</div>
                     <div class="item_content">
@@ -70,39 +74,7 @@
                 <div class="left left_40"><div class="btn reset_btn" v-on:click="reset(new_episode)">reset</div></div>
                 <div class="right right_60"><div class="btn submit_btn"  v-on:click="add_new">submit</div></div>
             </div>
-        </div>
-        <div class="msgBox" id="edit_juji_board" v-show="edit_show">
-            <div class="btn close_btn"  v-on:click="edit_show=false"></div>
-            <div class="title">编辑剧集</div>
-            <div class="form">
-
-                <div class="item">
-                    <div class="item_title">剧集名称</div>
-                    <div class="item_content">
-                        <input type="text" v-model="edit_episode.episode_name" name="episode_name">
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="item_title">主要角色</div>
-                    <div class="item_content">
-                        <input type="text" v-model="edit_episode.main_roles" name="main_roles">
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="item_title">剧集序号</div>
-                    <div class="item_content">
-                        <input type="text" v-model="edit_episode.episode_rank"  name="episode_rank">
-                    </div>
-                </div>
-            </div>
-
-            <div style="height:40px;margin:10px;margin-top:20px;">
-                <div class="left left_40"><div class="btn reset_btn" v-on:click="reset_from(edit_episode,episode_data[episode_data_map[edit_episode.id]])">reset</div></div>
-                <div class="right right_60"><div class="btn submit_btn" v-on:click="edit">submit</div></div>
-            </div>
-        </div>
-
-        
+        </div>  
     </div>
 </template>
 
@@ -198,5 +170,12 @@ export default {
 }
 </script>
 <style scoped>
+.el-button--primary,.el-button--primary:focus,.el-button--primary.is-active, .el-button--primary:active{background:  #009688;}
+
+.el-button--primary:hover {
+    background:  #009688;
+    border-color: #009688;
+    color: #FFF;
+}
 
 </style>

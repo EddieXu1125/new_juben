@@ -26,13 +26,15 @@
             <div class="item_board">
                 <div class="jumu_item" id="new_add_jumu_item">
                     <div class="title" id="new_jumu" style="cursor:pointer;" v-on:click="add_new_show=true;">新建剧目</div>
-                </div>
+                </div> 
                 <div style="height:180px;width:2px;background:#ddd;margin:20px 10px;"></div>
-                <div class="jumu_item" v-for="drama in jumu_data" :key="drama.id" @dblclick="$router.push('/menu/e/'+encode(drama.id)+'/allCards')">
-                    <div v-on:click="$router.push('/menu/e/'+encode(drama.id)+'/allCards')" class="title">{{drama.drama_name}}</div>
+                <div class="jumu_item" v-for="drama in jumu_data" :key="drama.id" @dblclick="$router.push('/menu/e/'+encode(drama_id)+'/')">
+                    <div v-on:click="$router.push('/menu/e/'+encode(drama.id)+'/')" class="title">{{drama.drama_name}}</div>
                     <div class="c_time">{{drama.c_time}}</div>
                 </div>
             </div>
+
+
             <!-- 增加新剧目 -->
             <div class="msgBox" id="add_new_jumu_board" v-show="add_new_show">
                 <div class="btn close_btn"  v-on:click="add_new_show=false;"></div>
@@ -63,7 +65,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div style="height:40px;margin:10px;margin-top:20px;">
                     <div class="left left_40"><div class="btn reset_btn" v-on:click="reset(new_drama)">reset</div></div>
                     <div class="right right_60"><div class="btn submit_btn"  v-on:click="add_new">submit</div></div>
@@ -71,6 +72,7 @@
             </div>
         </div>
     </div>
+</div>
 </template>
 
 <script>

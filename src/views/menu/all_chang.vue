@@ -30,23 +30,16 @@
                 <el-tooltip  effect="dark" content="编辑场" placement="bottom">
                     <el-button type="primary" :icon="is_edit?'el-icon-check':'el-icon-edit'" circle @click="is_edit=!is_edit"></el-button>
                 </el-tooltip>
-                <el-button type="primary" :icon="'el-icon-back'" @click="$router.push('/menu')">剧本管理</el-button>
-                <el-button type="primary" :icon="'el-icon-folder'" @click="$router.push('/menu/e/'+encode(drama_id)+'/')">剧集管理</el-button>
-                <el-dropdown @command="select_episode" trigger="click">
-                    <span class="el-dropdown-link">
-                        选择某一剧集中的场<i class="el-icon-arrow-down el-icon--right"></i>
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item
-                        v-for="episode in episode_data"
-                        :key="episode.id"
-                        :command="current_select(episode.episode_name,episode.id)"                    
-                        v-text="episode.episode_name">                           
-                        </el-dropdown-item>                      
-                    </el-dropdown-menu>
-                </el-dropdown>
+                <el-button type="primary" :icon="'el-icon-back'" @click="$router.push('/menu/e/'+encode(drama_id)+'/')">剧集管理</el-button>
+             
+                <el-button @click="select_episode(episode.id)" trigger="click" icon="el-icon-view">                         
+                    本剧集中的所有场                  
+                </el-button>
+        
                 <el-button type="primary" style="float:right;" icon="el-icon-folder-add" v-show="is_edit" @click="show_add_to=true;add_to_episode_id=null;">添加至</el-button>
             </el-row>
+
+
             <!-- 新建场 -->
             <div class="msgBox" id="add_new_chang_board" style="z-index:11;" v-show="add_chang_show">
                 <div class="btn close_btn" id="close_new"  @click="add_chang_show=false;"></div>
@@ -83,38 +76,8 @@
                     <div class="right right_60"><div class="btn submit_btn" id="submit_btn"  @click="submit_new_chang">submit</div></div>
                 </div>
             </div>
-            <!-- 新建剧集 -->
-            <div class="msgBox" id="add_new_episode_board" v-show="add_episode_show">
-                <div class="cover"></div>
-                <div class="btn close_btn"  v-on:click="add_episode_show=false"></div>
-                <div class="title">新建剧集</div>
-                <div class="form" id="new_form">
-
-                    <div class="item">
-                        <div class="item_title">剧集名称</div>
-                        <div class="item_content">
-                            <input type="text" value="" autocomplete="off" name="episode_name">
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item_title">主要角色</div>
-                        <div class="item_content">
-                            <input type="text"  value=""  autocomplete="off" name="main_roles">
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item_title">剧集序号</div>
-                        <div class="item_content">
-                            <input type="text" value=""  autocomplete="off"  name="episode_rank">
-                        </div>
-                    </div>
-                </div>
-                <div style="height:40px;margin:10px;margin-top:20px;">
-                    <div class="left left_40"><div class="btn reset_btn" v-on:click="reset_new_episode">reset</div></div>
-                    <div class="right right_60"><div class="btn submit_btn"  v-on:click="submit_new_episode">submit</div></div>
-                </div>
-            </div>
-            <!-- 展示所有的的场 -->
+           
+            <!-- 展示当前剧集里面的场 -->
             <div class="item_board" :class="is_edit?'active':''">
                 <el-checkbox-group v-if="chang_data.length > 0" v-model="checkList" style="font-size:1em;width:100%;">
                 <el-row :gutter="10" style="width:100%;">
@@ -169,7 +132,7 @@
                 ></el-button>
                 <iframe :src="faste_url"></iframe>
             </el-card>
-            <!-- 编辑场所在的剧集 -->
+            <!-- 编辑场-->
             <el-dialog
                 title="添加至..."
                 :visible.sync="show_add_to"
@@ -223,6 +186,7 @@ export default {
             chang_data_map:{},
             chang_data:[],
             add_episode_show:false,
+
             episode_data_map:{},
             episode_data:[],
             add_to_episode_id:null,
@@ -247,30 +211,32 @@ export default {
                 PullChangData(that.drama_id,"").then((returndata) => {
                     returndata=returndata[0];
                     console.log(returndata);
-                    for(var i=0;i<returndata.length;i++){
-                        that.chang_data.push(returndata[i]);
-                        that.selected_chang.push(returndata[0]);
-                        that.chang_data_map[returndata[i].id]=i;
+                    for(var j=0;j<returndata.length;j++){
+                        that.chang_data.push(returndata[j]);
+                        that.selected_chang.push(returndata[j]);
+                        that.chang_data_map[returndata[j].id]=j;
                     }
                 })
             }
         );
+        
         first_loadding.add_process(
             "拉取剧集数据",
             function(){
                 PullJiData(that.drama_id,'').then((returndata) => {
                     that.episode_data = returndata.episode;
-                    that.episode_data.push({"episode_name":"未分类场","id":"-1"});
-                    that.episode_data.push({"episode_name":"所有场","id":"0109"});
                     that.characters = returndata.character;
-                    for(var i=0;i<returndata.episode.length;i++){
+                    for(var i=0;i<returndata.episode.length;i++)
+                    {
                         that.episode_data_map[returndata.episode[i].id]=i;
                     }
                 })                                  
             }
         );
         first_loadding.start();
-    },
+
+
+     },
     methods:{
         handleClose(done) {
             this.$confirm('确认关闭？')
@@ -428,26 +394,22 @@ export default {
                     this.selected_episode.episode_id == chang.episode_id               
             );
         },
-        current_select(name,id){
-            //将两个参数打包成一个对象
-            return {
-                ep_name:name,
-                ep_id:id
-            }
-        },
-        select_episode(episode){
-            if(episode.ep_name!=="所有场"){
-                // 将对象的各个值赋给selected_episode
-                this.selected_episode["episode_name"]=episode.ep_name;
-                this.selected_episode["episode_id"]=episode.ep_id;
-                this.chang_filter();
-            }else{
-                this.selected_chang = this.chang_data;
+        // current_select(name,id){
+        //     //将两个参数打包成一个对象
+        //     return {
+        //         ep_name:name,
+        //         ep_id:id
+        //     }
+        // },
+        select_episode(id){
+                // this.selected_episode["episode_name"]=episode.name;
+                this.selected_episode["episode_id"]=id;
+                this.chang_filter()
             }
             
         },
     }
-}
+
 </script>
 
 <style>

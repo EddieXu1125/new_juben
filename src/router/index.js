@@ -49,7 +49,7 @@ export const constantRoutes = [
   {
     path: '/quick',
     component: Layout,
-    redirect: '/quick/index',
+    redirect: '/quick/index/',
     children: [{
       path: 'index',
       name: 'quick',
@@ -60,7 +60,7 @@ export const constantRoutes = [
   {
     path: '/menu',
     component: Layout,
-    redirect: '/menu/index',
+    redirect: '/menu/index/',
     children: [
       {
         path: 'index',
@@ -82,38 +82,8 @@ export const constantRoutes = [
         props:true,
         hidden: true
       },
-      // {
-      //   path:"e/:encode_drama_id/:encode_episode_id",
-      //   component:Jeditor_chang,
-      //   props:true
-      // },
-        //   {path:"e/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:Jeditor_editor,props:true},
-        //   {path:"faste/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:jeditor_fast_editor,props:true},
     ]
   },
-
-//   {
-//     path:"/board",component: MainFrame,
-//     children:[
-//         {path:"e",component:Jeditor_Ju,alias: '/'},
-//         {path:"e/:encode_drama_id",component:Jeditor_Ji,props:true},
-//         {path:"e/:encode_drama_id/allCards",component:jeditor_all_chang,props:true},
-//         {path:"e/:encode_drama_id/:encode_episode_id",component:Jeditor_chang,props:true},
-//         {path:"e/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:Jeditor_editor,props:true},
-//         {path:"faste/:encode_drama_id/:encode_episode_id/:encode_scene_id",component:jeditor_fast_editor,props:true},
-//         {path:"board/rm",component:Manager,
-//             children:[
-//                 {path:"",redirect: "Character"},
-//                 {path:"Relation",component:Relation_Manager},
-//                 {path:"Character",component: Character_Manager}
-//             ]
-//         },
-//         {path:"board/ed",component:ExternalDB},
-//         {path:"board/edf",component:ExternalDBFrame},
-
-//         {path:"building",component:Building},
-//     ]
-// }
 
   {
     path: 'external-link',
