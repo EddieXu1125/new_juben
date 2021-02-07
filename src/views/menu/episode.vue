@@ -1,11 +1,7 @@
 <template>
     <div class="main_board">
         <div class="center_main">
-        
-            <el-row>
-                <el-button type="primary" size="middle" :icon="'el-icon-back'" @click="$router.push('/menu')">剧本管理</el-button>
-            </el-row>
-        
+            <div class="backto iconfont" @click="$router.push('/menu/')">&#xe6a8;</div>        
             <div class="searchbar">
                 <el-select
                     @keyup.enter.native="(searchcontent==''?null:$router.push('/board/e/'+encode(drama_id) + '/'+encode(searchcontent)))"
@@ -27,54 +23,16 @@
                 </div>
             </div>
             <div class="item_board">
-                <div class="jumu_item" id="new_add_jumu_item">
-                    <div class="title" id="new_jumu" style="cursor:pointer;" v-on:click="add_new_show=true;">新建剧集</div>
-                    <div class="hidden_menu">
-                        <div class="btn" style="width:100%;">上传</div>
-                    </div>
-                </div>
-                <div style="height:180px;width:2px;background:#ddd;margin:20px 10px;"></div>
                 <div class="jumu_item" v-for="episode in episode_data" :key="episode.id" 
-                @dblclick="$router.push('/menu/e/'+encode(drama.id)+'/allCards')">
-                    <div v-on:click="$router.push('/menu/e/'+encode(drama_id)+'/allCards')" class="title">{{episode.episode_name}}</div>
+                @dblclick="">
+                <!-- $router.push('/menu/e/'+encode(drama.id)+'/allCards') -->
+                    <div v-on:click="" class="title">{{episode.episode_name}}</div>
+                    <!-- $router.push('/menu/e/'+encode(drama_id)+'/allCards') -->
                     <div class="c_time">{{episode.c_time}}</div>
-                    <div class="hidden_menu">
-                        <div class="btn" v-on:click="$router.push('/menu/e/'+encode(drama_id)+'/allCards')" style="width:100%;">阅读</div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 新建剧集 -->
-        <div class="msgBox" id="add_new_juji_board" v-show="add_new_show">
-            <div class="btn close_btn"  v-on:click="add_new_show=false"></div>
-            <div class="title">新建剧集</div>
-            <div class="form" id="new_form">
-                <div class="item">
-                    <div class="item_title">剧集名称</div>
-                    <div class="item_content">
-                        <input type="text" v-model="new_episode.episode_name" name="episode_name">
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="item_title">主要角色</div>
-                    <div class="item_content">
-                        <input type="text" v-model="new_episode.main_roles" name="main_roles">
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="item_title">剧集序号</div>
-                    <div class="item_content">
-                        <input type="text" v-model="new_episode.episode_rank"  name="episode_rank">
-                    </div>
-                </div>
-            </div>
-
-            <div style="height:40px;margin:10px;margin-top:20px;">
-                <div class="left left_40"><div class="btn reset_btn" v-on:click="reset(new_episode)">reset</div></div>
-                <div class="right right_60"><div class="btn submit_btn"  v-on:click="add_new">submit</div></div>
-            </div>
-        </div>  
     </div>
 </template>
 
@@ -133,36 +91,6 @@ export default {
         first_loadding.start();
     },
     methods:{
-        save_character_data:function(characters){
-            if (sessionStorage.getItem("character_list")==null || sessionStorage.getItem("current_drama_id") != this.drama_id)
-            {
-                window.sessionStorage.setItem("character_list",JSON.stringify(characters));
-                window.sessionStorage.setItem("current_drama_id", this.drama_id);
-            }
-        },
-        show_delete:function(id){
-            if(id == -1){return;}
-            this.need_to_delete = id;
-            this.delete_show=true;
-        },
-        reset_from:function(item1,item2){
-            console.log(item1,item2)
-            for(let i in item2){item1[i]=item2[i];}
-        },
-        show_edit:function(id){
-            if(id==-1){
-                return;
-            }
-            this.need_to_edit_id=id;
-            console.log(id,this.episode_data,this.episode_data_map);
-            for(var key in this.episode_data[this.episode_data_map[id]]){
-                this.edit_episode[key]=this.episode_data[this.episode_data_map[id]][key];
-            }
-            this.edit_show=true;
-        },
-        reset:function(item){
-            for(var i in item){item[i] = ""}
-        },
         encode:function(code){
             return window.btoa(code);
         }

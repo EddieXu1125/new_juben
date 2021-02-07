@@ -24,52 +24,12 @@
             </div>
             <!-- 剧目板 -->
             <div class="item_board">
-                <div class="jumu_item" id="new_add_jumu_item">
-                    <div class="title" id="new_jumu" style="cursor:pointer;" v-on:click="add_new_show=true;">新建剧目</div>
-                </div> 
-                <div style="height:180px;width:2px;background:#ddd;margin:20px 10px;"></div>
                 <div class="jumu_item" v-for="drama in jumu_data" :key="drama.id" @dblclick="$router.push('/menu/e/'+encode(drama_id)+'/')">
                     <div v-on:click="$router.push('/menu/e/'+encode(drama.id)+'/')" class="title">{{drama.drama_name}}</div>
                     <div class="c_time">{{drama.c_time}}</div>
                 </div>
             </div>
 
-
-            <!-- 增加新剧目 -->
-            <div class="msgBox" id="add_new_jumu_board" v-show="add_new_show">
-                <div class="btn close_btn"  v-on:click="add_new_show=false;"></div>
-                <div class="title">新建剧目</div>
-                <div class="form" id="new_form">
-                    <div class="item">
-                        <div class="item_title">剧目名称</div>
-                        <div class="item_content">
-                            <input type="text" v-model="new_drama.drama_name" name="drama_name">
-                        </div>
-                    </div>
-                <div class="item">
-                        <div class="item_title">剧目题材</div>
-                        <div class="item_content">
-                            <input type="text" v-model="new_drama.drama_theme" name="drama_theme">
-                        </div>
-                    </div>
-                <div class="item">
-                        <div class="item_title">剧目类型</div>
-                        <div class="item_content">
-                            <input type="text" v-model="new_drama.drama_type" name="drama_type">
-                        </div>
-                    </div>
-                <div class="item">
-                        <div class="item_title">剧目年代</div>
-                        <div class="item_content">
-                            <input type="text" v-model="new_drama.drama_time" name="drama_time">
-                        </div>
-                    </div>
-                </div>
-                <div style="height:40px;margin:10px;margin-top:20px;">
-                    <div class="left left_40"><div class="btn reset_btn" v-on:click="reset(new_drama)">reset</div></div>
-                    <div class="right right_60"><div class="btn submit_btn"  v-on:click="add_new">submit</div></div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -134,40 +94,6 @@ export default {
         first_loadding.start();
     },
     methods:{
-        reset:function(item){
-            for(let i in item){item[i]=""}
-        },
-        add_new:function(){
-            var that = this;
-            var new_form = $("#new_form");
-            var items = new_form.find(".item input");
-            for(var i = 0; i < items.length; i ++ ){
-                if(items[i].value.length == 0){
-                    items[i].style.border = "2px dashed #E57373";
-                    setTimeout(function(){
-                        items[i].style.border = "0px dashed transparent";
-                    },1000);
-                    return;
-                }
-            }
-            var add_loadding=new Loadding();
-            const param =  that.new_drama;
-            add_loadding.add_title("新建剧目");
-            add_loadding.__init__();
-            add_loadding.add_process(
-                "新建",
-                function () {
-                    createdata(param).then(returndata => {
-                        that.jumu_data.push(returndata);
-                        that.jumu_data_map[returndata.id]=that.jumu_data.length-1;
-                        that.reset(that.new_drama);
-                    }).catch( () => {
-                        throw "wrong create drama";
-                    })
-                }
-            );
-            add_loadding.start(function(){that.add_new_show=false;});
-        },
         encode:function(code){
             return window.btoa(code);
         }

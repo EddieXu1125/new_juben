@@ -69,13 +69,6 @@ export const constantRoutes = [
         meta: { title: '层级目录', icon: 'nested' },
       },
       {
-        path: "e/:encode_drama_id/allCards",
-        name: 'all_chang',
-        component:() => import('@/views/menu/all_chang'),
-        props:true,
-        hidden: true
-      },
-      {
         path:"e/:encode_drama_id",
         name: 'episode',
         component:() => import('@/views/menu/episode'),
