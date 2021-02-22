@@ -2,7 +2,9 @@
 <el-container class="home-container" >
         <!--头部区域-->
   <el-header>
-      <div>
+      <div class="backto iconfont" @click="$router.push('/menu/')">&#xe6a8;</div>
+      <div style='display: flex;
+        align-items: center'>
           <span>阅读器</span>
       </div>
   </el-header>
@@ -16,28 +18,35 @@
     <div class="toggle-button" @click="toggleCollapse">|||</div>
 
 <!-- 在左边栏展开和伸缩下面依次展示本剧集中的所有场 -->
+<el-menu :collapse="isCollapse"
+collapse-transition="false">
     <div id="chang_item_board">
-        <!-- 所有场的宽度也随着展开伸缩而变化 -->
-        <div style="height:2px;width:isCollapse ? '64px': '180px';background:#ddd;margin:10px 10px;"></div>
+        <!-- 所有场的宽度也随着展开伸缩而变化 -->      
         <div class="item" v-for="item in chang_list" :key="item.id">
             <div class='title' v-on:click="$router.push('/menu/e/' + encode(drama_id) + '/' + encode(episode_id) + '/' + encode(item.id))">
             {{item.scene_name}}
             </div>
         </div>
     </div>
+</el-menu>
     </el-aside>
 
     <!--右侧内容区-->
     <el-main>
-
+<el-card class="box-card">
+  <div>
+    123
+  </div>
+</el-card>
     </el-main>
   </el-container>
 </el-container>
 </template>
 <script>
 import "../../assets/css/jeditor.css";
+import "../../assets/css/chang.css";
 import "../../assets/css/base.css";
-import { PullChangData} from '@/api/menu.js';
+import { pulldata } from '@/api/reader.js';
 const $=require("jquery");
 const Loadding = require("../../assets/js/loadding").default.Loadding;
 const base = require("../../assets/js/base").default;
@@ -51,10 +60,11 @@ export default {
         return{
             isCollapse: false,
             searchcontent:"",
-            ROOT_HOST:ROOT_HOST,
             drama_id:0,
             episode_id:0,
             chang_list:[],
+            chang_id2idx:{},
+
         }; 
     },
     mounted:function(){
@@ -68,10 +78,14 @@ export default {
         first_loadding.add_process(
             "拉取数据",
             function(){                
-                PullChangData(that.drama_id,'').then((returndata) => {
+                pulldata(that.drama_id,that.episode_id).then((returndata) => {
                     for(var i in returndata[0]){
                         that.chang_list.push(returndata[0][i])
+                        that.chang_id2idx[returndata[0][i].id] = i;
                     }
+                    console.log(that.chang_list)
+                    console.log('这是chang_id2idx')
+                    console.log(that.chang_id2idx)
                 })                                  
             }
         );
@@ -92,31 +106,34 @@ export default {
 }
 </script>
 <style>
+html,body{width:100%;height:100%;}
+span{
+    text-align:center;
+    display:inline-block
+}
 .home-container{
-    height:672.4px;
+    
+    overflow-y:auto;
+    
 }
 .el-header{
-    background-color: #009688;
+    background-color: #a1badb;
     display: flex;
     justify-content: space-between;
     padding-left: 0;
     color: #FFF;
-    font-size: 20px;
-    >div {
-        display: flex;
-        align-items: center;
-    }
+    font-size: 25px;
 }
 .el-aside{
-    background-color: #B2DFDB;
+    background-color: #EEEEEE;
 }
 .el-main{
     background-color: #EEEEEE;
 }
 .toggle-button{
-    background-color:  #92c9c4;
+    background-color:  #87879c;
     font-size: 10px;
-    line-height: 24px;
+    line-height: 20px;
     color: #fff;
     text-align: center;
     letter-spacing: 0.2em;
