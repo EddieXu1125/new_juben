@@ -38,7 +38,7 @@
 <script>
 import "../../assets/css/jeditor.css";
 import "../../assets/css/base.css";
-import { pulldata , createdata } from '@/api/menu.js'
+import { pulldata} from '@/api/menu.js'
 const $=require("jquery");
 const Loadding = require("../../assets/js/loadding").default.Loadding;
 const base = require("../../assets/js/base").default;
@@ -48,28 +48,7 @@ export default {
         return{
             message:"",
             searchcontent:"",
-            jumu_data:[],
-            jumu_data_map:{},
-            add_new_show:false,
-            delete_show:false,
-            edit_show:false,
-            form_cover:false,
-            need_to_delete_id:-1,
-            new_drama:{
-                "drama_name":"",
-                "main_roles":"",
-                "drama_theme":"",
-                "drama_type":"",
-                "drama_time":""
-            },
-            edit_drama:{
-                "id":"",
-                "drama_name":"",
-                "main_roles":"",
-                "drama_theme":"",
-                "drama_type":"",
-                "drama_time":""
-            }
+            jumu_data:[]
         }
     },
     mounted:function(){
@@ -85,9 +64,6 @@ export default {
                 pulldata('').then((returndata) => {
                     console.log(returndata);
                     that.jumu_data=returndata;
-                    for(var i=0;i<returndata.length;i++){
-                        that.jumu_data_map[returndata[i].id]=i;
-                    }
                 })
             }
         );

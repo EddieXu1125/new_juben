@@ -19,15 +19,17 @@
                     </el-option>
                 </el-select>
                 <div class="search_btn">
-                    <div class="btn" @click="(searchcontent==''?null:$router.push('/board/e/'+encode(drama_id) + '/'+encode(searchcontent)))">Search</div>
+                    <div class="btn" @click="(searchcontent==''?null:$router.push('/menu/e/'+encode(drama_id) + '/'+encode(searchcontent)))">Search</div>
                 </div>
             </div>
+
             <div class="item_board">
                 <div class="jumu_item" v-for="episode in episode_data" :key="episode.id" 
-                @dblclick="">
-                <!-- $router.push('/menu/e/'+encode(drama.id)+'/allCards') -->
-                    <div v-on:click="" class="title">{{episode.episode_name}}</div>
-                    <!-- $router.push('/menu/e/'+encode(drama_id)+'/allCards') -->
+                @dblclick="$router.push('/menu/e/'+encode(episode.drama_id) + '/'+encode(episode.id)+'/')">
+                    <div v-on:click="$router.push('/menu/e/'+encode(episode.drama_id) + '/'+encode(episode.id)+'/')" class="title">
+                    <!--路由地址： path:"e/:encode_drama_id/:encode_episode_id"-->
+                    {{episode.episode_name}}
+                    </div>   
                     <div class="c_time">{{episode.c_time}}</div>
                 </div>
             </div>
@@ -39,7 +41,7 @@
 <script>
 import "../../assets/css/jeditor.css";
 import "../../assets/css/base.css";
-import { PullChangData , PullJiData , CreateJi , UpdateChang } from '@/api/menu.js';
+import {PullJiData} from '@/api/menu.js';
 const $=require("jquery");
 const Loadding = require("../../assets/js/loadding").default.Loadding;
 const base = require("../../assets/js/base").default;
@@ -49,24 +51,7 @@ export default {
         return{
             drama_id:0,
             searchcontent:"",
-            episode_data:[],
-            episode_data_map:{},
-            add_new_show:false,
-            form_cover:false,
-            delete_show:false,
-            edit_show:false,
-            need_to_delete:-1,
-            new_episode:{
-                "episode_name":"",
-                "main_roles":"",
-                "episode_rank":"",
-            },
-            edit_episode:{
-                "id":"",
-                "episode_name":"",
-                "main_roles":"",
-                "episode_rank":"",
-            }
+            episode_data:[]
         }
     },
     mounted:function(){
@@ -81,10 +66,6 @@ export default {
             function(){                
                 PullJiData(that.drama_id,'').then((returndata) => {
                     that.episode_data = returndata.episode;
-                    that.characters = returndata.character;
-                    for(var i=0;i<returndata.episode.length;i++){
-                        that.episode_data_map[returndata.episode[i].id]=i;
-                    }
                 })                                  
             }
         );
@@ -98,12 +79,5 @@ export default {
 }
 </script>
 <style scoped>
-.el-button--primary,.el-button--primary:focus,.el-button--primary.is-active, .el-button--primary:active{background:  #009688;}
-
-.el-button--primary:hover {
-    background:  #009688;
-    border-color: #009688;
-    color: #FFF;
-}
 
 </style>

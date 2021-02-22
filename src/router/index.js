@@ -75,6 +75,13 @@ export const constantRoutes = [
         props:true,
         hidden: true
       },
+      {
+        path:"e/:encode_drama_id/:encode_episode_id",
+        name: 'reader',
+        component:() => import('@/views/menu/reader'),
+        props:true,
+        hidden: true
+      },
     ]
   },
 
