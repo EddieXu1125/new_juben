@@ -76,11 +76,14 @@ export const constantRoutes = [
         hidden: true
       },
       {
-        path:"e/:encode_drama_id/:encode_episode_id",
+        path:"e/:encode_drama_id/:encode_episode_id/",
         name: 'reader',
         component:() => import('@/views/menu/reader'),
         props:true,
-        hidden: true
+        hidden: true,
+        children:[{path:'content',
+                   name:'content',
+                   component:() => import('@/views/menu/content')}]
       },
     ]
   },

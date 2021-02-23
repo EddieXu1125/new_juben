@@ -1,7 +1,7 @@
 <template>
     <div class="main_board">
         <div class="center_main">
-            <div class="backto iconfont" @click="$router.push('/menu/')">&#xe6a8;</div>        
+            <div class="backto iconfont" @click="$router.push('/menu/index/')">&#xe6a8;</div>        
             <div class="searchbar">
                 <el-select
                     @keyup.enter.native="(searchcontent==''?null:$router.push('/board/e/'+encode(drama_id) + '/'+encode(searchcontent)))"

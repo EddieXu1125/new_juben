@@ -1,8 +1,9 @@
 <template>
 <el-container class="home-container" >
-        <!--头部区域-->
+
+ <!--头部区域-->
   <el-header>
-      <div class="backto iconfont" @click="$router.push('/menu/')">&#xe6a8;</div>
+      <div class="backto iconfont" @click="$router.push('/menu/index/')">&#xe6a8;</div>
       <div style='display: flex;
         align-items: center'>
           <span>阅读器</span>
@@ -18,12 +19,13 @@
     <div class="toggle-button" @click="toggleCollapse">|||</div>
 
 <!-- 在左边栏展开和伸缩下面依次展示本剧集中的所有场 -->
+
 <el-menu :collapse="isCollapse"
 collapse-transition="false">
     <div id="chang_item_board">
         <!-- 所有场的宽度也随着展开伸缩而变化 -->      
         <div class="item" v-for="item in chang_list" :key="item.id">
-            <div class='title' v-on:click="$router.push('/menu/e/' + encode(drama_id) + '/' + encode(episode_id) + '/' + encode(item.id))">
+            <div class='title' v-on:click="$router.push('/menu/e/' + encode(drama_id) + '/' + encode(episode_id) + '/content')">
             {{item.scene_name}}
             </div>
         </div>
@@ -33,11 +35,6 @@ collapse-transition="false">
 
     <!--右侧内容区-->
     <el-main>
-<el-card class="box-card">
-  <div>
-    123
-  </div>
-</el-card>
     </el-main>
   </el-container>
 </el-container>
@@ -112,9 +109,7 @@ span{
     display:inline-block
 }
 .home-container{
-    
-    overflow-y:auto;
-    
+    height: 100vh;  
 }
 .el-header{
     background-color: #a1badb;
@@ -126,6 +121,8 @@ span{
 }
 .el-aside{
     background-color: #EEEEEE;
+    height: 100vh;
+    overflow-y: scroll;
 }
 .el-main{
     background-color: #EEEEEE;
