@@ -35,16 +35,11 @@
 
     <!--右侧内容区-->
     <el-main>
-        <div class="chang_content">
-            
+        <div class="chang_content">   
         </div>
         <div class="chang_button">
-            <el-row :span='50'>
-                <el-button type="primary" round @click="show_content">主要按钮</el-button>
-            </el-row>    
-        </div>
-                                  
-            
+                <el-button type="primary" size="small" @click="show_content(chang_list[0])">开始阅读</el-button>
+        </div>      
     </el-main>
   </el-container>
 </el-container>
@@ -107,7 +102,8 @@ export default {
         {
             this.isCollapse=!this.isCollapse;
         },
-        chow_content(item){
+
+        show_content(item){
             pullcontent(this.drama_id,this.episode_id,item.id).then((returndata) => {
                 $(".chang_content").empty();
                 console.log('这是')
@@ -119,6 +115,7 @@ export default {
                     $(".chang_content").append(returndata[0][i].content)
                 }                
             })
+            
         },
         encode:function(code){
             return window.btoa(code);
@@ -129,15 +126,15 @@ export default {
 <style>
 html,body{width:100%;height:100%;}
 .chang_content{
-    width:70%;
-    height:100%;
-    float:left;
+    width:100%;
+    height: 80vh;
+    overflow-y: scroll;
     border: 1px solid #fff;
 }
 .chang_button{
-    width:30%;
-    height:100%;
-    float:right;
+    width: 100%;
+    height:50px;
+    padding-top: 10px;
 }
 span{
     text-align:center;
@@ -161,6 +158,8 @@ span{
 }
 .el-main{
     background-color: #EEEEEE;
+    height: 100vh;
+    overflow-y: scroll;
 }
 .toggle-button{
     background-color:  #87879c;
@@ -171,4 +170,5 @@ span{
     letter-spacing: 0.2em;
     cursor: pointer;
 }
+
 </style>
