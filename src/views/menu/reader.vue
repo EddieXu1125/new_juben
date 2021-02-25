@@ -35,11 +35,23 @@
 
     <!--右侧内容区-->
     <el-main>
-        <div class="chang_content">   
+        <div class="chang_content">
+            
         </div>
         <div class="chang_button">
+            <el-row :span='50' v-for ="bt in current_button" :key="bt.element_id">
+
+                <el-button type="primary" round @click="change_button">                  
+                    {{bt.element_content}}
+                </el-button>
+        <!--<div class="chang_button">
                 <el-button type="primary" size="small" @click="show_content(chang_list[0])">开始阅读</el-button>
-        </div>      
+            </div>      -->
+
+            </el-row>    
+        </div>
+                                  
+            
     </el-main>
   </el-container>
 </el-container>
@@ -48,12 +60,11 @@
 import "../../assets/css/jeditor.css";
 import "../../assets/css/chang.css";
 import "../../assets/css/base.css";
-import { pulldata , pullcontent } from '@/api/reader.js';
+import { pulldata , pullcontent , pullEpisodeRelation , pullAllElement} from '@/api/reader.js';
 const $=require("jquery");
 const Loadding = require("../../assets/js/loadding").default.Loadding;
 const base = require("../../assets/js/base").default;
 import { Collapse } from 'element-ui'
-import Content from './content.vue';
 //控制展开和收缩的组件
 
 export default {
@@ -66,7 +77,16 @@ export default {
             episode_id:0,
             chang_list:[],
             chang_id2idx:{},
-            current_chang_id:0,
+            current_button:[],
+            start_id:'',
+            before:{
+                graph_nodes_list:[],
+                graph_edges_list:[],
+                graph_nodes_set:new Set(),
+                graph_edges_set:new Set(),
+                node_id2idx:{},
+                edge_id2idx:{},
+            },
         }; 
     },
     mounted:function(){
@@ -85,15 +105,51 @@ export default {
                         that.chang_list.push(returndata[0][i])
                         that.chang_id2idx[returndata[0][i].id] = i;
                     }
-                    that.current_chang_id=returndata[0][i].id;
-                    console.log('当前id')
-                    console.log(that.current_chang_id)
+                    console.log('这是chang_list')
                     console.log(that.chang_list)
                     console.log('这是chang_id2idx')
                     console.log(that.chang_id2idx)
                 }).catch((error)=> console.log(error))                                 
             }
         );
+        first_loadding.add_process(
+            '拉取所有元素',
+            function(){
+                pullAllElement(that.drama_id,that.episode_id).then((returndata) => {
+                    for(var i in returndata[0]){
+                        if(returndata[0][i].is_start!=0){
+                            console.log("这是开始节点")
+                            that.current_button.push(returndata[0][i])
+                            console.log(that.current_button)
+                        }
+                        that.before.graph_nodes_list.push(returndata[0][i]);
+                        that.before.graph_nodes_set.add(returndata[0][i].element_id);
+                        that.before.node_id2idx[returndata[0][i].element_id]=i;
+                    }
+                    console.log('这是episodeemelemt')
+                    console.log(returndata[0])
+                    // 所有元素的内容
+                    console.log('这是before')
+                    console.log(that.before)
+                }).catch((error)=> console.log(error))     
+            }
+        );
+        first_loadding.add_process(
+            '拉取元素关系',
+            function(){
+                pullEpisodeRelation(that.drama_id,that.episode_id).then((returndata) => {
+                    console.log('这是episoderelation')
+                    // 元素之间的关系，包含父节点id和子节点id还有自身id
+                    for(var i in returndata[0]){
+                        that.before.graph_edges_list.push(returndata[0][i]);
+                        that.before.graph_edges_set.add(returndata[0][i].id);
+                        that.before.edge_id2idx[returndata[0][i].id]=i;
+                    }
+                    console.log(returndata[0])
+                }).catch((error)=> console.log(error))     
+            }
+        );
+
         first_loadding.start();
     },
     methods:{
@@ -102,8 +158,8 @@ export default {
         {
             this.isCollapse=!this.isCollapse;
         },
-
         show_content(item){
+            console.log(this.drama_id,this.episode_id,item.id)
             pullcontent(this.drama_id,this.episode_id,item.id).then((returndata) => {
                 $(".chang_content").empty();
                 console.log('这是')
@@ -115,11 +171,13 @@ export default {
                     $(".chang_content").append(returndata[0][i].content)
                 }                
             })
-            
         },
         encode:function(code){
             return window.btoa(code);
         },
+        change_button(){
+
+        }
     }
 }
 </script>
@@ -170,5 +228,4 @@ span{
     letter-spacing: 0.2em;
     cursor: pointer;
 }
-
 </style>
