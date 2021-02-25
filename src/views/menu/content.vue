@@ -1,15 +1,19 @@
 <template>
-<div>
-  <h3>
-    场内容组件
-  </h3>
-</div>
+  <div id='app' class='main_board'>
+    <h3>
+      场内容组件
+    </h3>
+  </div>
 </template>
 
 
 <script>
 export default {
-    
+    data(){
+      return{
+
+      }
+    }
 }
 </script>
 
