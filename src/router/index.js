@@ -80,10 +80,7 @@ export const constantRoutes = [
         name: 'reader',
         component:() => import('@/views/menu/reader'),
         props:true,
-        hidden: true,
-        children:[{path:'content',
-                   name:'content',
-                   component:() => import('@/views/menu/content')}]
+        hidden: true
       },
     ]
   },

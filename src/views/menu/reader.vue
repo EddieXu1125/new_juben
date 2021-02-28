@@ -39,15 +39,18 @@
             
         </div>
         <div class="chang_button">
-            <el-row :span='50' v-for ="bt in current_button" :key="bt.element_id">
-
-                <el-button type="primary" round @click="change_button">                  
+            <el-row :span='50'>
+                <el-button v-show="!isCondition" @click="">
+                    <!-- 不是condition就继续 -->
+                    
+                </el-button>
+                <div class="isCdt" v-show="isCondition">
+                    <el-button type="primary" round @click="change_button(bt)" v-for ="bt in current_button" :key="bt.element_id">                  
+                    <!-- 如果是condition，就进行判断 -->
                     {{bt.element_content}}
                 </el-button>
-        <!--<div class="chang_button">
-                <el-button type="primary" size="small" @click="show_content(chang_list[0])">开始阅读</el-button>
-            </div>      -->
-
+                </div>
+                
             </el-row>    
         </div>
                                   
@@ -60,7 +63,7 @@
 import "../../assets/css/jeditor.css";
 import "../../assets/css/chang.css";
 import "../../assets/css/base.css";
-import { pulldata , pullcontent , pullEpisodeRelation , pullAllElement} from '@/api/reader.js';
+import { pulldata , pullcontent , pullEpisodeRelation , pullAllElement } from '@/api/reader.js';
 const $=require("jquery");
 const Loadding = require("../../assets/js/loadding").default.Loadding;
 const base = require("../../assets/js/base").default;
@@ -72,20 +75,21 @@ export default {
     data(){
         return{
             isCollapse: false,
+            isCondition: false,
             searchcontent:"",
             drama_id:0,
             episode_id:0,
             chang_list:[],
             chang_id2idx:{},
             current_button:[],
-            start_id:'',
+            start_id:'',           
             before:{
                 graph_nodes_list:[],
                 graph_edges_list:[],
                 graph_nodes_set:new Set(),
                 graph_edges_set:new Set(),
-                node_id2idx:{},
-                edge_id2idx:{},
+                node_id2edge:{},
+                edge_id2node:{},
             },
         }; 
     },
@@ -124,7 +128,7 @@ export default {
                         }
                         that.before.graph_nodes_list.push(returndata[0][i]);
                         that.before.graph_nodes_set.add(returndata[0][i].element_id);
-                        that.before.node_id2idx[returndata[0][i].element_id]=i;
+                        that.before.node_id2edge[returndata[0][i].element_id]=i;
                     }
                     console.log('这是episodeemelemt')
                     console.log(returndata[0])
@@ -143,7 +147,8 @@ export default {
                     for(var i in returndata[0]){
                         that.before.graph_edges_list.push(returndata[0][i]);
                         that.before.graph_edges_set.add(returndata[0][i].id);
-                        that.before.edge_id2idx[returndata[0][i].id]=i;
+                        that.before.edge_id2node[returndata[0][i].id]=returndata[0][i].children_id;
+                        that.before.node_id2edge[returndata[0][i].parent_id]=returndata[0][i].id;
                     }
                     console.log(returndata[0])
                 }).catch((error)=> console.log(error))     
@@ -163,10 +168,7 @@ export default {
             pullcontent(this.drama_id,this.episode_id,item.id).then((returndata) => {
                 $(".chang_content").empty();
                 console.log('这是')
-                console.log(returndata)
-                // for(let i in returndata[0]){
-                //     console.log(returndata[0][i].content)
-                // }                
+                console.log(returndata)            
                 for(let i in returndata[0]){
                     $(".chang_content").append(returndata[0][i].content)
                 }                
