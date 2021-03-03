@@ -39,18 +39,11 @@
             
         </div>
         <div class="chang_button">
-            <el-row :span='50'>
-                <el-button v-show="!isCondition" @click="">
-                    <!-- 不是condition就继续 -->
-                    
+            <el-row :span='50'>         
+                <el-button type="primary" round @click="change_button(bt)" v-for ="bt in current_button" :key="bt.element_id">                  
+                <!-- 如果是condition，就进行判断 -->
+                {{bt.element_content}}
                 </el-button>
-                <div class="isCdt" v-show="isCondition">
-                    <el-button type="primary" round @click="change_button(bt)" v-for ="bt in current_button" :key="bt.element_id">                  
-                    <!-- 如果是condition，就进行判断 -->
-                    {{bt.element_content}}
-                </el-button>
-                </div>
-                
             </el-row>    
         </div>
                                   
@@ -63,7 +56,7 @@
 import "../../assets/css/jeditor.css";
 import "../../assets/css/chang.css";
 import "../../assets/css/base.css";
-import { pulldata , pullcontent , pullEpisodeRelation , pullAllElement } from '@/api/reader.js';
+import { pulldata , pullcontent , pullEpisodeRelation , pullAllElement , pullElementContent } from '@/api/reader.js';
 const $=require("jquery");
 const Loadding = require("../../assets/js/loadding").default.Loadding;
 const base = require("../../assets/js/base").default;
@@ -177,7 +170,14 @@ export default {
         encode:function(code){
             return window.btoa(code);
         },
-        change_button(){
+        change_button(bt){
+            console.log(bt.drama_id,bt.episode_id,bt.element_id)
+            pullElementContent(bt.drama_id,bt.episode_id,bt.element_id).then(returndata=>{
+                console.log("这是交互");
+                console.log(returndata);
+            })
+        },
+        continue(){
 
         }
     }
