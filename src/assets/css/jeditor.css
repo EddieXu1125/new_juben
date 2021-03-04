@@ -48,11 +48,10 @@ overflow: auto;
 }
 
 .center_main{
-height:100%;
-overflow:hidden;
-width:800px;
-margin:auto;
-min-width: 800px;
+  height:100%;
+  margin: 0 auto;
+  overflow:hidden;
+  margin: auto;
 }
 
 #logout{
@@ -163,10 +162,10 @@ padding: 10px 0px;
     box-sizing: border-box;
     transition:ease .5s;
     transform: scale(1.1);
-    backdrop-filter: blur(10px);    
+    backdrop-filter: blur(10px);
 }
 
-.jumu_item:hover 
+.jumu_item:hover
 .hidden_menu{
     transform: scale(1);
 bottom:0px;
