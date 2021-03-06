@@ -30,12 +30,12 @@
             v-for="episode in episode_data"
             :key="episode.id"
             class="jumu_item"
-            @dblclick="$router.push('/menu/e/'+encode(drama.id)+'/allCards')"
+            @dblclick="$router.push('/menu/e/'+encode(drama.id)+`/${encode(episode.id)}`)"
           >
-            <div class="title" @click="$router.push('/menu/e/'+encode(drama_id)+'/allCards')">{{ episode.episode_name }}</div>
+            <div class="title" @click="$router.push('/menu/e/'+encode(drama_id)+`/${encode(episode.id)}`)">{{ episode.episode_name }}</div>
             <div class="c_time">{{ episode.c_time }}</div>
             <div class="hidden_menu">
-              <div class="btn" style="width:100%;" @click="$router.push('/menu/e/'+encode(drama_id)+'/allCards')">阅读</div>
+              <div class="btn" style="width:100%;" @click="$router.push('/menu/e/'+encode(drama_id)+`/${encode(episode.id)}`)">阅读</div>
             </div>
           </div>
         </div>

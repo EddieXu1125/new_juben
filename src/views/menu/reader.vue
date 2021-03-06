@@ -18,15 +18,20 @@
       <el-main>
         <el-row type="flex" justify="center">
           <el-col class="center_main" :xs="24" :md="20">
-            <div class="chang_content" />
-            <div class="chang_button">
-              <el-row :span="50">
-                <el-button v-for="bt in current_button" :key="bt.element_id" type="primary" round @click="change_button(bt)">
-                  <!-- 如果是condition，就进行判断 -->
-                  {{ bt.element_content }}
-                </el-button>
-              </el-row>
-            </div>
+            <ul class="infinite-list" v-infinite-scroll="load" style="overflow:auto;margin:0;padding:0;">
+              <el-card v-for="item in chang_content_list" :style="{ borderTop: item.type?'2px solid rgb(159 162 169)':0, borderBottom:item.type?0:'2px solid rgb(159 162 169)' }">
+                <div slot="header" class="clearfix" v-if="item.type">
+                  <span> {{ item.scene[0].scene_name }} </span>
+                </div>
+                <div v-for="dialog in item.content" v-if="item.type">
+                  <p v-html="dialog.content"></p>
+                </div>
+                <span v-if="!item.type"> {{ item.node[0].element_content }}<span v-if="item.node[0].element_type!='end'">:</span></span>
+                <div v-if="!item.type" style="display: flex;justify-content: space-around;">
+                  <el-button v-for="choice in item.next_list" type="primary" @click="() => {next_scene = choice;chang_content_list.splice(chang_content_list.length-1,1)}">{{ choice.remark }}</el-button>
+                </div>
+              </el-card>
+            </ul>
           </el-col>
         </el-row>
       </el-main>
@@ -41,10 +46,8 @@
       size="250"
     >
       <div id="chang_item_board">
-        <!-- 所有场的宽度也随着展开伸缩而变化 -->
         <div v-for="item in chang_list" :key="item.id" class="item">
-          <div class="title" @click="show_content(item)">
-            <!-- $router.push('/menu/e/' + encode(drama_id) + '/' + encode(episode_id) + '/content') -->
+          <div class="title" @click="show_scene(item)">
             {{ item.scene_name }}
           </div>
         </div>
@@ -56,7 +59,8 @@
 import '../../assets/css/jeditor.css'
 import '../../assets/css/chang.css'
 import '../../assets/css/base.css'
-import { pulldata, pullcontent, pullEpisodeRelation, pullAllElement, pullElementContent } from '@/api/reader.js'
+import '@/assets/css/line.css'
+import { pulldata, pullcontent, getStartNode, getElementContent, getSceneContent } from '@/api/reader.js'
 const $ = require('jquery')
 const Loadding = require('../../assets/js/loadding').default.Loadding
 const base = require('../../assets/js/base').default
@@ -83,7 +87,9 @@ export default {
         graph_edges_set: new Set(),
         node_id2edge: {},
         edge_id2node: {}
-      }
+      },
+      chang_content_list: [],
+      next_scene: null
     }
   },
   mounted: function() {
@@ -102,82 +108,47 @@ export default {
             that.chang_list.push(returndata[0][i])
             that.chang_id2idx[returndata[0][i].id] = i
           }
-          console.log('这是chang_list')
-          console.log(that.chang_list)
-          console.log('这是chang_id2idx')
-          console.log(that.chang_id2idx)
         }).catch((error) => console.log(error))
       }
     )
     first_loadding.add_process(
-      '拉取所有元素',
-      function() {
-        pullAllElement(that.drama_id, that.episode_id).then((returndata) => {
-          for (var i in returndata[0]) {
-            if (returndata[0][i].is_start != 0) {
-              console.log('这是开始节点')
-              that.current_button.push(returndata[0][i])
-              console.log(that.current_button)
-            }
-            that.before.graph_nodes_list.push(returndata[0][i])
-            that.before.graph_nodes_set.add(returndata[0][i].element_id)
-            that.before.node_id2edge[returndata[0][i].element_id] = i
-          }
-          console.log('这是episodeemelemt')
-          console.log(returndata[0])
-          // 所有元素的内容
-          console.log('这是before')
-          console.log(that.before)
-        }).catch((error) => console.log(error))
+      '拉取第一个场',
+      () => {
+        getStartNode(this.drama_id, this.episode_id).then((res) => {
+          this.show_content(res.next_list[0])
+        })
       }
     )
-    first_loadding.add_process(
-      '拉取元素关系',
-      function() {
-        pullEpisodeRelation(that.drama_id, that.episode_id).then((returndata) => {
-          console.log('这是episoderelation')
-          // 元素之间的关系，包含父节点id和子节点id还有自身id
-          for (var i in returndata[0]) {
-            that.before.graph_edges_list.push(returndata[0][i])
-            that.before.graph_edges_set.add(returndata[0][i].id)
-            that.before.edge_id2node[returndata[0][i].id] = returndata[0][i].children_id
-            that.before.node_id2edge[returndata[0][i].parent_id] = returndata[0][i].id
-          }
-          console.log(returndata[0])
-        }).catch((error) => console.log(error))
-      }
-    )
-
     first_loadding.start()
   },
   methods: {
-    // 点击按钮，切换菜单的折叠与展开
-    toggleCollapse() {
-      this.isCollapse = !this.isCollapse
-    },
-    show_content(item) {
-      console.log(this.drama_id, this.episode_id, item.id)
-      pullcontent(this.drama_id, this.episode_id, item.id).then((returndata) => {
-        $('.chang_content').empty()
-        console.log('这是')
-        console.log(returndata)
-        for (const i in returndata[0]) {
-          $('.chang_content').append(returndata[0][i].content)
+    show_content(data) {
+      getElementContent(this.drama_id, this.episode_id, data.children_id).then(res => {
+        if (res.scene) {
+          this.next_scene = res.next_list[0]
+          pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
+            this.chang_content_list.push({ ...res, 'content': returndata[0], 'type': true })
+          })
+        } else {
+          this.next_scene = null
+          this.chang_content_list.push({ ...res, 'type': false })
         }
+      })
+    },
+    show_scene(item) {
+      getSceneContent(this.drama_id, this.episode_id, item.id).then((res) => {
+        pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
+          this.chang_content_list = [{ ...res, 'content': returndata[0], 'type': true }]
+        })
       })
     },
     encode: function(code) {
       return window.btoa(code)
     },
-    change_button(bt) {
-      console.log(bt.drama_id, bt.episode_id, bt.element_id)
-      pullElementContent(bt.drama_id, bt.episode_id, bt.element_id).then(returndata => {
-        console.log('这是交互')
-        console.log(returndata)
-      })
-    },
-    continue() {
-
+    load: function() {
+      if (this.next_scene) {
+        this.show_content(this.next_scene)
+      }
     }
   }
 }
@@ -216,9 +187,12 @@ span{
   overflow-y: scroll;
 }
 .el-main{
-  background-color: #EEEEEE;
   height: calc(100vh - 110px);
   overflow-y: scroll;
+}
+.el-main::-webkit-scrollbar{
+  width: 0;
+  height: 0;
 }
 .toggle-button{
   background-color:  #87879c;
@@ -233,5 +207,12 @@ span{
   width: 45px;
   position: fixed;
   top: calc(50vh - 10px);
+}
+.el-card{
+  margin: 10px 0 0 0;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  border: 0;
+  border-radius: 0;
 }
 </style>
