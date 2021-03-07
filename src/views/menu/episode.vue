@@ -142,4 +142,14 @@ export default {
     color: #FFF;
 }
 
+@media only screen and (max-width: 767px){
+  .jumu_item{
+    width:100%;
+    height:150px;
+  }
+  .jumu_item::before{
+    bottom:-90px;
+    right:-20px;
+  }
+}
 </style>

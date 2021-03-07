@@ -1,15 +1,13 @@
 <template>
   <el-container class="home-container">
     <!--头部区域-->
-    <el-header>
       <div class="backto iconfont" @click="$router.push('/menu/e/'+encode(drama_id)+'/')">&#xe6a8;</div>
       <div
         style="display: flex;
         align-items: center"
       >
-        <span>阅读器</span>
+        <!-- <span>阅读器</span> -->
       </div>
-    </el-header>
     <!--页面主体区-->
     <el-container>
       <!--侧边栏-->
@@ -19,15 +17,16 @@
         <el-row type="flex" justify="center">
           <el-col class="center_main" :xs="24" :md="20">
             <ul class="infinite-list" v-infinite-scroll="load" style="overflow:auto;margin:0;padding:0;">
-              <el-card v-for="item in chang_content_list" :style="{ borderTop: item.type?'2px solid rgb(159 162 169)':0, borderBottom:item.type?0:'2px solid rgb(159 162 169)' }">
+              <!-- <el-card v-for="item in chang_content_list" :style="{ borderTop: item.type?'2px solid rgb(159 162 169)':0, borderBottom:item.type?0:'2px solid rgb(159 162 169)' }"> -->
+              <el-card v-for="item in chang_content_list" :class="item.type?'scene':'other'">
                 <div slot="header" class="clearfix" v-if="item.type">
                   <span> {{ item.scene[0].scene_name }} </span>
                 </div>
                 <div v-for="dialog in item.content" v-if="item.type">
                   <p v-html="dialog.content"></p>
                 </div>
-                <span v-if="!item.type"> {{ item.node[0].element_content }}<span v-if="item.node[0].element_type!='end'">:</span></span>
-                <div v-if="!item.type" style="display: flex;justify-content: space-around;">
+                <span v-if="!item.type" style="white-space: nowrap;line-height: 40px;"> {{ item.node[0].element_content + (item.node[0].element_type!='end'?':':'')}}</span>
+                <div v-if="!item.type" style="width:100%;display: flex;justify-content: space-around;">
                   <el-button v-for="choice in item.next_list" type="primary" @click="() => {next_scene = choice;chang_content_list.splice(chang_content_list.length-1,1)}">{{ choice.remark }}</el-button>
                 </div>
               </el-card>
@@ -172,9 +171,10 @@ span{
 }
 .home-container{
   height: calc(100vh - 50px);
+  background:#eee;
 }
 .el-header{
-  background-color: #a1badb;
+  /* background-color: #a1badb; */
   display: flex;
   justify-content: space-between;
   padding-left: 0;
@@ -189,6 +189,7 @@ span{
 .el-main{
   height: calc(100vh - 110px);
   overflow-y: scroll;
+  
 }
 .el-main::-webkit-scrollbar{
   width: 0;
@@ -210,9 +211,24 @@ span{
 }
 .el-card{
   margin: 10px 0 0 0;
+}
+.el-card.other{
   box-shadow: none;
   -webkit-box-shadow: none;
-  border: 0;
-  border-radius: 0;
+  border:0px;
+  background: transparent;
+}
+.el-card.scene ::v-deep .el-card__header{
+  font-size:1.2em;
+  font-weight: bold;
+}
+.el-card.other ::v-deep .el-card__body{
+  display: flex;
+  justify-content: left;
+}
+.backto{
+  box-shadow: 0px 4px 10px -2px rgb(93,107,192);
+      position: absolute;
+    z-index: 1;
 }
 </style>
