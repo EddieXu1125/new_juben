@@ -121,8 +121,8 @@ export default {
       getElementContent(this.drama_id, this.episode_id, data.children_id).then(res => {
         if (res.scene) {
           var recent_chang=[res.node[0].drama_id,res.node[0].episode_id,res.node[0].scene_id];
-
           Storage.setItem(time.getTime(),JSON.stringify(recent_chang)); 
+          
           this.next_scene = res.next_list[0]
           pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
             this.chang_content_list.push({ ...res, 'content': returndata[0], 'type': true })
