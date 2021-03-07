@@ -1,18 +1,13 @@
 <template>
   <el-container class="home-container">
-    <!--头部区域-->
       <div class="backto iconfont" @click="$router.push('/menu/e/'+encode(drama_id)+'/')">&#xe6a8;</div>
       <div
         style="display: flex;
         align-items: center"
-      >
-        <!-- <span>阅读器</span> -->
+      >  
       </div>
-    <!--页面主体区-->
+    
     <el-container>
-      <!--侧边栏-->
-      <!-- 通过宽度的调整控制展开和收缩 -->
-      <!--右侧内容区-->
       <el-main>
         <el-row type="flex" justify="center">
           <el-col class="center_main" :xs="24" :md="20">
@@ -51,6 +46,7 @@
           </div>
         </div>
       </div>
+
     </el-drawer>
   </el-container>
 </template>
@@ -63,8 +59,8 @@ import { pulldata, pullcontent, getStartNode, getElementContent, getSceneContent
 const $ = require('jquery')
 const Loadding = require('../../assets/js/loadding').default.Loadding
 const base = require('../../assets/js/base').default
-import { Collapse } from 'element-ui'
-// 控制展开和收缩的组件
+const Storage = window.localStorage
+var time = new Date()
 
 export default {
   props: ['encode_drama_id', 'encode_episode_id'],
@@ -124,6 +120,9 @@ export default {
     show_content(data) {
       getElementContent(this.drama_id, this.episode_id, data.children_id).then(res => {
         if (res.scene) {
+          var recent_chang=[res.node[0].drama_id,res.node[0].episode_id,res.node[0].scene_id];
+
+          Storage.setItem(time.getTime(),JSON.stringify(recent_chang)); 
           this.next_scene = res.next_list[0]
           pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
             this.chang_content_list.push({ ...res, 'content': returndata[0], 'type': true })
@@ -154,17 +153,6 @@ export default {
 </script>
 <style scoped>
 html,body{width:100%;height:100%;}
-.chang_content{
-  width:100%;
-  height: 80vh;
-  overflow-y: scroll;
-  border: 1px solid #fff;
-}
-.chang_button{
-  width: 100%;
-  height:50px;
-  padding-top: 10px;
-}
 span{
   text-align:center;
   display:inline-block
@@ -173,23 +161,8 @@ span{
   height: calc(100vh - 50px);
   background:#eee;
 }
-.el-header{
-  /* background-color: #a1badb; */
-  display: flex;
-  justify-content: space-between;
-  padding-left: 0;
-  color: #FFF;
-  font-size: 25px;
-}
-.el-aside{
-  background-color: #EEEEEE;
-  /*height: 100vh;*/
-  overflow-y: scroll;
-}
 .el-main{
-  /* height: calc(100vh - 110px); */
   overflow-y: scroll;
-  
 }
 .el-main::-webkit-scrollbar{
   width: 0;
@@ -230,5 +203,8 @@ span{
   box-shadow: 0px 4px 10px -2px rgb(93,107,192);
       position: absolute;
     z-index: 1;
+}
+.el-drawer{
+  overflow-y: scroll;
 }
 </style>
