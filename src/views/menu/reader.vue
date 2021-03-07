@@ -187,7 +187,7 @@ span{
   overflow-y: scroll;
 }
 .el-main{
-  height: calc(100vh - 110px);
+  /* height: calc(100vh - 110px); */
   overflow-y: scroll;
   
 }
