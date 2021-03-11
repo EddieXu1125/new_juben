@@ -2,37 +2,37 @@
   <!-- 展示最近阅读的场 -->
 <div class="item_board">
     <el-row :gutter="10" style="width:100%;">
-        <el-col :span="4" v-for="chang in recent_chang" :key="chang.id">
+        <el-col :span="4" v-for="chang in recent_chang" :key="chang.scene[0].id">
             <el-card class="chang_card">
-                <el-row class="chang_card_title  textEllipsis">{{chang.scene_name}}</el-row>
+                <el-row class="chang_card_title  textEllipsis">{{chang.scene[0].scene_name}}</el-row>
                 <!-- 点击场展示场的内容 -->
-                    <div class="content" @click="$router.push({path:'/quick/e/content',query:{scene_id:chang.id,episode_id:chang.episode_id,drama_id:chang.drama_id}})">
+                    <div class="content" @click="$router.push({path:'/quick/e/content',query:{scene_id:chang.scene[0].id,episode_id:chang.scene[0].episode_id,drama_id:chang.scene[0].drama_id}})">
                                     <!-- 场类型 -->
                                     <div class="item">
                                         <div class="item_title iconfont">&#xe79e;</div>
                                         <div class="item_content textEllipsis">
-                                            {{chang.scene_type}}
+                                            {{chang.scene[0].scene_type}}
                                         </div>
                                     </div>
                                     <!-- 天气 -->
                                     <div class="item">
                                         <div class="item_title iconfont">&#xe8ae;</div>
                                         <div class="item_content textEllipsis">
-                                        {{chang.weather}}
+                                        {{chang.scene[0].weather}}
                                         </div>
                                     </div>
                                     <!-- 时间 -->
                                     <div class="item">
                                         <div class="item_title iconfont">&#xe601;</div>
                                         <div class="item_content textEllipsis">
-                                        {{chang.scene_time}}
+                                        {{chang.scene[0].scene_time}}
                                         </div>
                                     </div>
                                     <!-- 地点 -->
                                     <div class="item">
                                         <div class="item_title iconfont">&#xe632; </div>
                                         <div class="item_content textEllipsis">
-                                        {{chang.scene_location}}
+                                        {{chang.scene[0].scene_location}}
                                         </div>
                                     </div>
                             </div> 
@@ -44,7 +44,7 @@
 
 <script>
 import '../../assets/css/jeditor.css'
-import { PullChangData } from '@/api/menu.js'
+import { PullSceneData } from '@/api/menu.js'
 const Storage = window.localStorage
 export default {
   props: ["encode_drama_id", "encode_episode_id", "encode_scene_id"],
@@ -54,33 +54,34 @@ export default {
        episode_id: 0,
        chang_id:0,
        selected_chang:[],
-       // 在selected_chang[]里面存放：localstorage里面的最近读取的场对应的剧目剧集和场自身的id
+       // 在selected_chang[]里面存放：localStorage里面的最近读取的场对应的剧目剧集和场自身的id
        recent_chang:[]
        // 在recent_chang:[]里面存放最近读过的场的后台拉取的各种数据
     }
   },
 
   mounted: function(){
-      for(var i = 0;i<Storage.length;i++){
+    for(var i = 0;i<Storage.length;i++){
         if(Storage.key(i) != 'loglevel:webpack-dev-server'){
-        this.selected_chang.push(eval(Storage.getItem(Storage.key(i))))
+            this.selected_chang.push(eval(Storage.getItem(Storage.key(i))))
         }
     }
+    console.log(this.selected_chang)
 
-      for (var i=0;i<this.selected_chang.length&&i<20;i++)
+    for (var i=0;i<this.selected_chang.length&&i<20;i++)
       //展示出最近阅读的20场
     {
             this.drama_id=this.selected_chang[i][0];
             this.episode_id=this.selected_chang[i][1];
             this.chang_id=this.selected_chang[i][2];
-
-            PullChangData(this.chang_id).then((returndata) => {
-            for (var j in returndata[0]) {
-            that.recent_chang.push(returndata[0][j])
-            }
+            PullSceneData(this.drama_id,this.episode_id,this.chang_id).then((returndata) => {
+                console.log('这个是returndata');
+                console.log(returndata);
+                this.recent_chang.push(returndata) 
         }).catch((error) => console.log(error))
     }
-    
+    console.log('这是recent_chang');
+    console.log(this.recent_chang);
     
   },
 

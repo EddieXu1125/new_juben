@@ -21,7 +21,9 @@ export function pulldata(data) {
 export function PullChangData(drama_id) {
     return postRequest("/jeditor/api/all_scene/"+ drama_id)
 }
-
+export function PullSceneData(drama_id, episode_id, scene_id) {
+  return postRequest(`/reader/api/read_one_scene/${drama_id}/${episode_id}/${scene_id}`)
+}
 // export function CreateChang(drama_id,data){
 //     return postJsonRequest("/jeditor/api/createepisodescene/"+drama_id+"/-1",data)
 // }

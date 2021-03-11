@@ -60,7 +60,7 @@ const $ = require('jquery')
 const Loadding = require('../../assets/js/loadding').default.Loadding
 const base = require('../../assets/js/base').default
 const Storage = window.localStorage
-var time = new Date()
+
 
 export default {
   props: ['encode_drama_id', 'encode_episode_id'],
@@ -84,7 +84,6 @@ export default {
         edge_id2node: {}
       },
       chang_content_list: [],
-      selected_chang: [],
       next_scene: null
     }
   },
@@ -120,21 +119,23 @@ export default {
   methods: {
     show_content(data) {
       getElementContent(this.drama_id, this.episode_id, data.children_id).then(res => {
-        // console.log('这是res');
-        // console.log(res);
         if (res.scene) {
+          var time = new Date();
           var recent_chang=[res.node[0].drama_id,res.node[0].episode_id,res.node[0].scene_id];
-          //var li_chang = [];
+          var li_chang = [];
           Storage.setItem(time.getTime(),JSON.stringify(recent_chang)); 
-          this.checkStorage();
-          // li_chang = 
+          li_chang = this.checkStorage();
+          // 
           // console.log(li_chang)
-          // Storage.clear();          
-          // for(var i=0;i<li_chang.length;i++){
-          //   Storage.setItem(li_chang[i].time,li_chang[i].data)            
-          // }
+          Storage.clear();                            
+          for(var i=0;i<li_chang.length;i++){
+            Storage.setItem(li_chang[i].time,li_chang[i].data)            
+          }
+          Storage.setItem('loglevel:webpack-dev-server','SILENT');
           this.next_scene = res.next_list[0]
           pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
+            console.log("这是return");
+            console.log(returndata);
             this.chang_content_list.push({ ...res, 'content': returndata[0], 'type': true })
           })
         } else {
@@ -145,11 +146,8 @@ export default {
     },
     show_scene(item) {
       getSceneContent(this.drama_id, this.episode_id, item.id).then((res) => {
-        console.log('这是res');
-        console.log(res);
         pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
-        console.log('这是returndata');
-        console.log(returndata);
+          
           this.chang_content_list = [{ ...res, 'content': returndata[0], 'type': true }]
         })
       })
@@ -176,18 +174,14 @@ export default {
         }       
       }
       limit_chang.sort(this.sortBy('time',true,parseInt));
-      limit_chang = this.unique(limit_chang,'data');
-      console.log('这是读取存储');
-      console.log(limit_chang);
-      // this.merge(limit_chang);
+      // limit_chang = this.unique(limit_chang,'data');
+      limit_chang = limit_chang.reduce((acc, cur) => {
+          const ids = acc.map(item => item.data);
+          return ids.includes(cur.data) ? acc : [...acc, cur];
+      }, []);
+      console.log(limit_chang)
       return limit_chang;
     },
-    // merge:function(item){
-    //   this.selected_chang=this.selected_chang.concat(item);
-    //   console.log('这是最终的场');
-    //   console.log(this.selected_chang);
-    //   return this.selected_chang;
-    // },
     sortBy: function(filed,rev,primer){
       // 排序
       rev = (rev)?-1:1;
@@ -207,14 +201,6 @@ export default {
           return 1;
       }
     },
-    unique: function(arr, attr) {
-      // 根据某一属性排除重复项
-      const res = new Map();
-      return arr.filter((item) => {   
-          var attrItem = item[attr]
-          return !res.has(attrItem) && res.set(attrItem, 1)    
-      })
-    }
   }
 }
 </script>
