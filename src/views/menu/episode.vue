@@ -11,7 +11,7 @@
             class="search_input"
             filterable
             placeholder="请输入剧本名称"
-            @keyup.enter.native="(searchcontent==''?null:$router.push('/board/e/'+encode(drama_id) + '/'+encode(searchcontent)))"
+            @keyup.enter.native="(searchcontent==''?null:$router.push('/menu/e/'+encode(drama_id) + '/'+encode(searchcontent)))"
           >
             <el-option
               v-for="item in episode_data"
@@ -22,7 +22,7 @@
             />
           </el-select>
           <div class="search_btn">
-            <div class="btn" @click="(searchcontent==''?null:$router.push('/board/e/'+encode(drama_id) + '/'+encode(searchcontent)))">Search</div>
+            <div class="btn" @click="(searchcontent==''?null:$router.push('/menu/e/'+encode(drama_id) + '/'+encode(searchcontent)))">Search</div>
           </div>
         </div>
         <div class="item_board">

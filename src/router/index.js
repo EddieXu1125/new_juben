@@ -50,12 +50,21 @@ export const constantRoutes = [
     path: '/quick',
     component: Layout,
     redirect: '/quick/index/',
-    children: [{
+    children: [
+      {
       path: 'index',
       name: 'quick',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '最近阅读', icon: 'dashboard' }
-    }]
+    },
+    {
+      path:"e/content",
+      name: 'content',
+      component:() => import('@/views/dashboard/content'),
+      props:true,
+      hidden: true
+    },
+  ]
   },
   {
     path: '/menu',

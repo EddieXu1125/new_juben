@@ -84,6 +84,7 @@ export default {
         edge_id2node: {}
       },
       chang_content_list: [],
+      selected_chang: [],
       next_scene: null
     }
   },
@@ -119,10 +120,19 @@ export default {
   methods: {
     show_content(data) {
       getElementContent(this.drama_id, this.episode_id, data.children_id).then(res => {
+        // console.log('这是res');
+        // console.log(res);
         if (res.scene) {
           var recent_chang=[res.node[0].drama_id,res.node[0].episode_id,res.node[0].scene_id];
+          //var li_chang = [];
           Storage.setItem(time.getTime(),JSON.stringify(recent_chang)); 
-          
+          this.checkStorage();
+          // li_chang = 
+          // console.log(li_chang)
+          // Storage.clear();          
+          // for(var i=0;i<li_chang.length;i++){
+          //   Storage.setItem(li_chang[i].time,li_chang[i].data)            
+          // }
           this.next_scene = res.next_list[0]
           pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
             this.chang_content_list.push({ ...res, 'content': returndata[0], 'type': true })
@@ -135,7 +145,11 @@ export default {
     },
     show_scene(item) {
       getSceneContent(this.drama_id, this.episode_id, item.id).then((res) => {
+        console.log('这是res');
+        console.log(res);
         pullcontent(this.drama_id, this.episode_id, res.scene[0].id).then((returndata) => {
+        console.log('这是returndata');
+        console.log(returndata);
           this.chang_content_list = [{ ...res, 'content': returndata[0], 'type': true }]
         })
       })
@@ -147,6 +161,59 @@ export default {
       if (this.next_scene) {
         this.show_content(this.next_scene)
       }
+    },
+    checkStorage: function() {
+      // 对storage进行检查。
+      // 返回一个对象数组，里面根据time由大到小，并排除重复的data
+      var limit_chang =[];
+      var chang = {};
+      for(var i=0;i<Storage.length;i++){
+        chang = {} ;
+        if(Storage.key(i) != 'loglevel:webpack-dev-server'){
+          chang.time = eval(Storage.key(i));
+          chang.data = Storage.getItem(Storage.key(i))
+          limit_chang.push(chang);
+        }       
+      }
+      limit_chang.sort(this.sortBy('time',true,parseInt));
+      limit_chang = this.unique(limit_chang,'data');
+      console.log('这是读取存储');
+      console.log(limit_chang);
+      // this.merge(limit_chang);
+      return limit_chang;
+    },
+    // merge:function(item){
+    //   this.selected_chang=this.selected_chang.concat(item);
+    //   console.log('这是最终的场');
+    //   console.log(this.selected_chang);
+    //   return this.selected_chang;
+    // },
+    sortBy: function(filed,rev,primer){
+      // 排序
+      rev = (rev)?-1:1;
+      return function(a,b){
+          a = a[filed];
+          b = b[filed];
+          if (typeof (primer) != 'undefined'){
+              a = primer(a);
+              b = primer(b);
+          }
+          if (a < b){
+              return rev * -1;
+          }
+          if(a>b){
+              return rev * 1;
+          }
+          return 1;
+      }
+    },
+    unique: function(arr, attr) {
+      // 根据某一属性排除重复项
+      const res = new Map();
+      return arr.filter((item) => {   
+          var attrItem = item[attr]
+          return !res.has(attrItem) && res.set(attrItem, 1)    
+      })
     }
   }
 }
