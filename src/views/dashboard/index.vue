@@ -14,21 +14,21 @@
                                             {{chang.scene[0].scene_type}}
                                         </div>
                                     </div>
-                                    <!-- 天气 -->
+                                    <!-- 场天气 -->
                                     <div class="item">
                                         <div class="item_title iconfont">&#xe8ae;</div>
                                         <div class="item_content textEllipsis">
                                         {{chang.scene[0].weather}}
                                         </div>
                                     </div>
-                                    <!-- 时间 -->
+                                    <!-- 场时间 -->
                                     <div class="item">
                                         <div class="item_title iconfont">&#xe601;</div>
                                         <div class="item_content textEllipsis">
                                         {{chang.scene[0].scene_time}}
                                         </div>
                                     </div>
-                                    <!-- 地点 -->
+                                    <!-- 场地点 -->
                                     <div class="item">
                                         <div class="item_title iconfont">&#xe632; </div>
                                         <div class="item_content textEllipsis">
